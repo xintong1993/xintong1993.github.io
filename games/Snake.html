@@ -1,0 +1,95 @@
+<canvas id="gc" width="400" height="400" style="background: url('https://i.ytimg.com/vi/SfLV8hD7zX4/maxresdefault.jpg')"></canvas>
+
+<script>
+window.onload=function() {
+	//The HTMLCanvasElement.getContext() method returns a drawing context on the canvas
+    canv=document.getElementById("gc");
+
+    //"2d", leading to the creation of a CanvasRenderingContext2D object representing a two-dimensional rendering context.
+    ctx=canv.getContext("2d");
+
+    //Attach a click event to the document
+    document.addEventListener("keydown",keyPush);
+
+    //calls a function at specified intervals (in milliseconds).
+    setInterval(game,1000/15);
+
+
+}
+px = py = 10; //player position at middle
+gs = tc = 20; //grid size & tile count
+ax = ay = 15; //apple position at right 
+xv = yv = 0;  
+trail = [];
+tail = 5;
+
+function game() {
+    var crash = false;
+    px+=xv;
+    py+=yv;
+
+    //out of frame
+    if(px<0) {
+        px= tc-1;
+    }
+    if(px>tc-1) {
+        px= 0;
+    }
+    if(py<0) {
+        py= tc-1;
+    }
+    if(py>tc-1) {
+        py= 0;
+    }
+    //background
+    var my_gradient=ctx.createLinearGradient(0,0,0,canv.height);
+	my_gradient.addColorStop(1,"pink");
+	my_gradient.addColorStop(0,"white");
+	ctx.fillStyle=my_gradient;
+    ctx.fillRect(0,0,canv.width,canv.height);
+
+    ctx.fillStyle="lightseagreen";
+    for(var i=0; i<trail.length; i++) {
+        ctx.fillRect(trail[i].x*gs,trail[i].y*gs,gs-2,gs-2);
+        if(trail[i].x==px && trail[i].y==py) {
+            //tail = 5;
+            var crash = true;
+        }
+    }
+    trail.push({x:px,y:py});
+    while(trail.length>tail) {
+    trail.shift();
+    }
+
+    if(ax==px && ay==py) {
+        tail++;
+        ax=Math.floor(Math.random()*tc);
+        ay=Math.floor(Math.random()*tc);
+    }
+    ctx.fillStyle="red";
+    ctx.fillRect(ax*gs,ay*gs,gs-3,gs-3);
+
+    return crash;
+}
+
+function keyPush(evt) {
+    switch(evt.keyCode) {
+    	//left arrow
+        case 37:
+            xv=-1; yv=0;
+            break;
+        //up
+        case 38:
+            xv=0; yv=-1;
+            break;
+        //right
+        case 39:
+            xv=1; yv=0;
+            break;
+        //down
+        case 40:
+            xv=0; yv=1;
+            break;
+    }
+}
+</script>
